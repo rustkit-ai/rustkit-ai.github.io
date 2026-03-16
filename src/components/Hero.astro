@@ -17,7 +17,7 @@
 
     <div class="install-block">
       <span class="install-prompt">$</span>
-      <code id="install-cmd">cargo install memo-agent</code>
+      <code id="install-cmd">cargo install aimemo</code>
       <button class="copy-btn" id="copy-btn" aria-label="Copy install command">
         <svg id="icon-copy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
@@ -231,7 +231,7 @@
   const iconCheck = document.getElementById('icon-check');
 
   btn?.addEventListener('click', () => {
-    navigator.clipboard.writeText('cargo install memo-agent');
+    navigator.clipboard.writeText('cargo install aimemo');
     btn.classList.add('copied');
     iconCopy!.style.display = 'none';
     iconCheck!.style.display = 'block';

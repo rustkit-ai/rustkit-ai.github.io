@@ -12,16 +12,16 @@ export type Project = {
 
 export const projects: Project[] = [
   {
-    slug: 'memo-agent',
-    name: 'memo',
+    slug: 'aimemo',
+    name: 'aimemo',
     description: 'Persistent memory for AI coding agents — Claude Code, Cursor, Windsurf, and Copilot. One command setup, zero manual steps.',
-    longDescription: `memo gives AI coding agents a persistent, structured memory that survives across sessions.
+    longDescription: `aimemo gives AI coding agents a persistent, structured memory that survives across sessions.
 Instead of losing context between conversations, your agent remembers what matters — architecture decisions, conventions, ongoing tasks, and more.
 
 Works out of the box with Claude Code, Cursor, Windsurf, and GitHub Copilot. One command to install, zero config required.`,
-    github: 'https://github.com/rustkit-ai/memo-agent',
-    crates: 'https://crates.io/crates/memo-agent',
-    install: 'cargo install memo-agent',
+    github: 'https://github.com/rustkit-ai/aimemo',
+    crates: 'https://crates.io/crates/aimemo',
+    install: 'cargo install aimemo',
     language: 'Rust',
     hasReleases: true,
   },
