@@ -1,0 +1,161 @@
+---
+type Release = {
+  tag_name: string;
+  name: string;
+  published_at: string | null;
+  html_url: string;
+  body: string | null;
+};
+
+let releases: Release[] = [];
+try {
+  const res = await fetch('https://api.github.com/repos/rustkit-ai/memo/releases');
+  const data: Release[] = await res.json();
+  releases = data
+    .filter((r) => r.published_at)
+    .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())
+    .slice(0, 5);
+} catch {
+  // silently fail
+}
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+---
+
+{releases.length > 0 && (
+  <section id="releases">
+    <div class="section-inner">
+      <div class="section-label reveal">Changelog</div>
+      <h2 class="reveal">Latest releases</h2>
+      <p class="section-sub reveal">
+        Recent updates to <a href="https://github.com/rustkit-ai/memo" target="_blank" rel="noopener">memo</a>.
+      </p>
+
+      <div class="releases-list reveal">
+        {releases.map((r, i) => (
+          <a href={r.html_url} target="_blank" rel="noopener" class={`release-item ${i === 0 ? 'latest' : ''}`}>
+            <div class="release-left">
+              <span class="release-tag">{r.tag_name}</span>
+              {i === 0 && <span class="release-badge">Latest</span>}
+            </div>
+            <div class="release-name">{r.name}</div>
+            <div class="release-date">{formatDate(r.published_at!)}</div>
+            <span class="release-arrow">→</span>
+          </a>
+        ))}
+      </div>
+
+      <a href="https://github.com/rustkit-ai/memo/releases" target="_blank" rel="noopener" class="all-releases">
+        View all releases →
+      </a>
+    </div>
+  </section>
+)}
+
+<style>
+  .releases-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .release-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+    transition: background 0.2s;
+  }
+
+  .release-item:last-child { border-bottom: none; }
+
+  .release-item:hover { background: var(--bg-3); }
+
+  .release-item.latest { background: var(--bg-3); }
+
+  .release-left {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .release-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    min-width: 60px;
+  }
+
+  .release-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: 3px;
+    background: var(--rust-glow);
+    color: var(--rust);
+    border: 1px solid var(--rust-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .release-name {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-family: 'IBM Plex Sans', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .release-date {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .release-arrow {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .release-item:hover .release-arrow {
+    transform: translateX(3px);
+    color: var(--rust);
+  }
+
+  .all-releases {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .all-releases:hover { color: var(--rust); }
+
+  @media (max-width: 640px) {
+    .release-item {
+      grid-template-columns: auto 1fr auto;
+      gap: 0.6rem;
+    }
+    .release-name { display: none; }
+  }
+</style>
