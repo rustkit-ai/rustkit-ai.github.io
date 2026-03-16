@@ -516,6 +516,68 @@
       line-height: 1.65;
     }
 
+    /* ─── FOUNDERS ──────────────────────────────────── */
+    .founders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .founder-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      transition: border-color 0.2s, background 0.2s;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .founder-card:hover {
+      border-color: var(--rust-dim);
+      background: var(--bg-3);
+    }
+
+    .founder-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 2px solid var(--border-hi);
+      overflow: hidden;
+      flex-shrink: 0;
+      background: var(--bg-3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 1.1rem;
+      color: var(--rust);
+    }
+
+    .founder-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .founder-name {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.2rem;
+    }
+
+    .founder-handle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--rust);
+    }
+
     /* ─── FOOTER ────────────────────────────────────── */
     footer {
       padding: 3rem 2rem;
@@ -602,6 +664,7 @@
     <ul class="nav-links">
       <li><a href="#projects">Projects</a></li>
       <li><a href="#philosophy">Philosophy</a></li>
+      <li><a href="#founders">Team</a></li>
       <li>
         <a href="https://github.com/rustkit-ai" target="_blank" rel="noopener" class="nav-gh">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
@@ -767,6 +830,37 @@
           <div class="phil-title">Open by nature</div>
           <p class="phil-desc">We build in the open because that's how the best tools get built — with the community, not at them.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOUNDERS -->
+  <section id="founders">
+    <div class="section-inner">
+      <div class="section-label reveal">Team</div>
+      <h2 class="reveal">The founders</h2>
+      <p class="section-sub reveal">Two engineers obsessed with making AI-assisted development faster and cheaper.</p>
+
+      <div class="founders-grid">
+        <a href="https://github.com/dbougouffa" target="_blank" rel="noopener" class="founder-card reveal">
+          <div class="founder-avatar">
+            <img src="https://github.com/dbougouffa.png" alt="Djamel Bougouffa" onerror="this.parentElement.textContent='DB'" />
+          </div>
+          <div>
+            <div class="founder-name">Djamel Bougouffa</div>
+            <div class="founder-handle">@dbougouffa</div>
+          </div>
+        </a>
+
+        <a href="https://github.com/gokhankabar" target="_blank" rel="noopener" class="founder-card reveal">
+          <div class="founder-avatar">
+            <img src="https://github.com/gokhankabar.png" alt="Gokhan Kabar" onerror="this.parentElement.textContent='GK'" />
+          </div>
+          <div>
+            <div class="founder-name">Gokhan Kabar</div>
+            <div class="founder-handle">@gokhankabar</div>
+          </div>
+        </a>
       </div>
     </div>
   </section>
