@@ -1,0 +1,79 @@
+---
+const principles = [
+  {
+    num: '01',
+    title: 'Speed by default',
+    desc: "Rust isn't a style choice — it's a contract. Our tools are fast enough to disappear into your workflow.",
+  },
+  {
+    num: '02',
+    title: 'Zero friction setup',
+    desc: "If it takes more than one command to install, we haven't finished building it yet.",
+  },
+  {
+    num: '03',
+    title: 'AI-first, not AI-only',
+    desc: "Tools that augment AI agents without locking you out. Everything works standalone too.",
+  },
+  {
+    num: '04',
+    title: 'Open by nature',
+    desc: "We build in the open because that's how the best tools get built — with the community, not at them.",
+  },
+];
+---
+
+<section id="philosophy" class="philosophy">
+  <div class="section-inner">
+    <div class="section-label reveal">Principles</div>
+    <h2 class="reveal">How we build</h2>
+    <p class="section-sub reveal">Every tool we ship follows the same constraints.</p>
+
+    <div class="phil-grid">
+      {principles.map((p) => (
+        <div class="phil-item reveal">
+          <div class="phil-num">{p.num}</div>
+          <div class="phil-title">{p.title}</div>
+          <p class="phil-desc">{p.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .philosophy {
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .phil-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .phil-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--rust);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+
+  .phil-title {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+  }
+
+  .phil-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+</style>

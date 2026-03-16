@@ -1,0 +1,68 @@
+---
+---
+
+<footer>
+  <div class="footer-inner">
+    <a href="/" class="footer-logo">rustkit<span>.</span>ai</a>
+    <ul class="footer-links">
+      <li><a href="https://github.com/rustkit-ai" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="https://github.com/rustkit-ai/memo" target="_blank" rel="noopener">memo</a></li>
+      <li><a href="https://github.com/rustkit-ai/rustkit-mcp" target="_blank" rel="noopener">rustkit-mcp</a></li>
+    </ul>
+    <span class="footer-copy">© 2026 rustkit-ai</span>
+  </div>
+</footer>
+
+<style>
+  footer {
+    padding: 3rem 2rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .footer-logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .footer-logo span { color: var(--rust); }
+
+  .footer-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 0.82rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .footer-links a:hover { color: var(--text-muted); }
+
+  .footer-copy {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  @media (max-width: 640px) {
+    footer { padding: 2rem 1.25rem; }
+    .footer-inner { flex-direction: column; align-items: flex-start; }
+  }
+</style>
