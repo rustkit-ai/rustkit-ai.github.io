@@ -1,40 +1,40 @@
 ---
-const principles = [
+const facts = [
   {
-    num: '01',
-    title: 'Speed by default',
-    desc: "Rust isn't a style choice — it's a contract. Our tools are fast enough to disappear into your workflow.",
+    value: '~5ms',
+    label: 'semantic search',
+    desc: 'rustkit-semantic searches 10k entries in ~5ms on CPU. No GPU, no cloud.',
   },
   {
-    num: '02',
-    title: 'Zero friction setup',
-    desc: "If it takes more than one command to install, we haven't finished building it yet.",
+    value: '1 cmd',
+    label: 'to install',
+    desc: 'cargo install memo. No config files, no manual steps, works in seconds.',
   },
   {
-    num: '03',
-    title: 'AI-first, not AI-only',
-    desc: "Tools that augment AI agents without locking you out. Everything works standalone too.",
+    value: '23MB',
+    label: 'embedding model',
+    desc: 'BGE-Small runs fully on-device. Your data never leaves your machine.',
   },
   {
-    num: '04',
-    title: 'Open by nature',
-    desc: "We build in the open because that's how the best tools get built — with the community, not at them.",
+    value: '60–90%',
+    label: 'token savings',
+    desc: 'rustkit-mcp filters and compresses tool output before it hits your LLM.',
   },
 ];
 ---
 
 <section id="philosophy" class="philosophy">
   <div class="section-inner">
-    <div class="section-label reveal">Principles</div>
-    <h2 class="reveal">How we build</h2>
-    <p class="section-sub reveal">Every tool we ship follows the same constraints.</p>
+    <div class="section-label reveal">By the numbers</div>
+    <h2 class="reveal">Built to perform</h2>
+    <p class="section-sub reveal">No benchmarks against imaginary competitors — just what our tools actually do.</p>
 
-    <div class="phil-grid">
-      {principles.map((p) => (
-        <div class="phil-item reveal">
-          <div class="phil-num">{p.num}</div>
-          <div class="phil-title">{p.title}</div>
-          <p class="phil-desc">{p.desc}</p>
+    <div class="facts-grid">
+      {facts.map((f) => (
+        <div class="fact-item reveal">
+          <div class="fact-value">{f.value}</div>
+          <div class="fact-label">{f.label}</div>
+          <p class="fact-desc">{f.desc}</p>
         </div>
       ))}
     </div>
@@ -48,31 +48,46 @@ const principles = [
     border-bottom: 1px solid var(--border);
   }
 
-  .phil-grid {
+  .facts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0;
     margin-top: 3rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
   }
 
-  .phil-num {
+  .fact-item {
+    padding: 2rem 1.75rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .fact-item:hover { background: var(--bg-3); }
+
+  .fact-value {
     font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
+    font-size: 2rem;
+    font-weight: 700;
     color: var(--rust);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .fact-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
     letter-spacing: 0.1em;
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
   }
 
-  .phil-title {
-    font-family: 'IBM Plex Sans', sans-serif;
-    font-weight: 600;
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
-    color: var(--text);
-  }
-
-  .phil-desc {
-    font-size: 0.85rem;
+  .fact-desc {
+    font-size: 0.83rem;
     color: var(--text-muted);
     line-height: 1.65;
   }
