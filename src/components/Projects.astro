@@ -1,5 +1,6 @@
 ---
-// Fetch stars at build time from GitHub API
+import { projects } from '../data/projects';
+
 type Repo = { name: string; stargazers_count: number };
 
 let repoStars: Record<string, number> = {};
@@ -7,36 +8,13 @@ try {
   const res = await fetch('https://api.github.com/orgs/rustkit-ai/repos');
   const repos: Repo[] = await res.json();
   repos.forEach((r) => { repoStars[r.name] = r.stargazers_count; });
-} catch {
-  // fallback — stars stay 0
-}
+} catch {}
 
-const projects = [
-  {
-    name: 'memo',
-    description: 'Persistent memory for AI coding agents — Claude Code, Cursor, Windsurf, and Copilot. One command setup, zero manual steps.',
-    url: 'https://github.com/rustkit-ai/memo',
-    install: 'cargo install memo',
-    stars: repoStars['memo'] ?? 0,
-    icon: 'brain',
-  },
-  {
-    name: 'rustkit-mcp',
-    description: 'An MCP proxy that dramatically reduces LLM token costs. Sit between your AI tools and APIs — efficient, transparent, fast.',
-    url: 'https://github.com/rustkit-ai/rustkit-mcp',
-    install: 'cargo install rustkit-mcp',
-    stars: repoStars['rustkit-mcp'] ?? 0,
-    icon: 'activity',
-  },
-  {
-    name: 'rustkit-semantic',
-    description: 'Local semantic search for Rust apps — store text, search by meaning. No cloud, no API key. Powered by BGE-Small + HNSW + SQLite, runs fully on-device.',
-    url: 'https://github.com/rustkit-ai/rustkit-semantic',
-    install: 'cargo add rustkit-semantic',
-    stars: repoStars['rustkit-semantic'] ?? 0,
-    icon: 'search',
-  },
-];
+const icons: Record<string, string> = {
+  'memo-agent': 'brain',
+  'rustkit-mcp': 'activity',
+  'rustkit-semantic': 'search',
+};
 ---
 
 <section id="projects">
@@ -46,54 +24,58 @@ const projects = [
     <p class="section-sub reveal">Open source tools designed to make AI-assisted development faster and smarter.</p>
 
     <div class="projects-grid">
-      {projects.map((p) => (
-        <a href={p.url} target="_blank" rel="noopener" class="project-card reveal">
-          <div class="card-header">
-            <div class="card-icon">
-              {p.icon === 'brain' && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><circle cx="12" cy="12" r="3"/>
-                </svg>
-              )}
-              {p.icon === 'activity' && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                </svg>
-              )}
-              {p.icon === 'search' && (
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                </svg>
-              )}
+      {projects.map((p) => {
+        const stars = repoStars[p.slug] ?? 0;
+        const icon = icons[p.slug] ?? 'search';
+        return (
+          <a href={`/projects/${p.slug}`} class="project-card reveal">
+            <div class="card-header">
+              <div class="card-icon">
+                {icon === 'brain' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
+                {icon === 'activity' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                  </svg>
+                )}
+                {icon === 'search' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                )}
+              </div>
+              <div class="card-badges">
+                <span class="badge badge-rust">{p.language}</span>
+                {stars > 0 && (
+                  <span class="badge badge-stars">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    {stars}
+                  </span>
+                )}
+              </div>
             </div>
-            <div class="card-badges">
-              <span class="badge badge-rust">Rust</span>
-              {p.stars > 0 && (
-                <span class="badge badge-stars">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                  {p.stars}
-                </span>
-              )}
+
+            <div class="card-name">{p.name}</div>
+            <p class="card-desc">{p.description}</p>
+
+            {p.install && (
+              <div class="card-install">
+                <span class="install-prompt">$</span>
+                <code>{p.install}</code>
+              </div>
+            )}
+
+            <div class="card-footer">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+              rustkit-ai/{p.name}
+              <span class="card-arrow">→</span>
             </div>
-          </div>
-
-          <div class="card-name">{p.name}</div>
-          <p class="card-desc">{p.description}</p>
-
-          {p.install && (
-            <div class="card-install">
-              <span class="install-prompt">$</span>
-              <code>{p.install}</code>
-            </div>
-          )}
-
-          <div class="card-footer">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
-            rustkit-ai/{p.name}
-            <span class="card-arrow">→</span>
-          </div>
-        </a>
-      ))}
+          </a>
+        );
+      })}
     </div>
   </div>
 </section>
@@ -136,31 +118,18 @@ const projects = [
   .project-card:hover { background: var(--bg-3); }
   .project-card:hover::before { transform: scaleX(1); }
 
-  .card-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 1rem;
-  }
+  .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
 
   .card-icon {
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border-radius: 6px;
     background: var(--rust-glow);
     border: 1px solid var(--rust-dim);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
   }
 
-  .card-icon svg {
-    width: 18px;
-    height: 18px;
-    color: var(--rust);
-  }
-
+  .card-icon svg { width: 18px; height: 18px; color: var(--rust); }
   .card-badges { display: flex; gap: 0.4rem; flex-wrap: wrap; }
 
   .badge {
@@ -173,62 +142,24 @@ const projects = [
   }
 
   .badge-rust { background: #e8591a18; color: #e87a4a; border: 1px solid #e8591a30; }
-  .badge-stars {
-    background: var(--blue-dim);
-    color: var(--blue);
-    border: 1px solid #4a9eff30;
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-  }
+  .badge-stars { background: var(--blue-dim); color: var(--blue); border: 1px solid #4a9eff30; display: flex; align-items: center; gap: 0.3rem; }
 
-  .card-name {
-    font-family: 'Space Mono', monospace;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
-
+  .card-name { font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
   .card-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; flex: 1; }
 
   .card-install {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 0.4rem 0.75rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; padding: 0.4rem 0.75rem;
   }
 
-  .install-prompt {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--rust);
-  }
+  .install-prompt { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--rust); }
+  .card-install code { font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--text-muted); }
 
-  .card-install code {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-  }
-
-  .card-footer {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    transition: color 0.2s;
-  }
-
+  .card-footer { display: flex; align-items: center; gap: 0.4rem; font-family: 'IBM Plex Mono', monospace; font-size: 0.75rem; color: var(--text-dim); transition: color 0.2s; }
   .project-card:hover .card-footer { color: var(--rust); }
   .card-arrow { margin-left: auto; transition: transform 0.2s; }
   .project-card:hover .card-arrow { transform: translateX(3px); }
 
-  @media (max-width: 640px) {
-    .projects-grid { grid-template-columns: 1fr; }
-  }
+  @media (max-width: 640px) { .projects-grid { grid-template-columns: 1fr; } }
 </style>

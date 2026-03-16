@@ -9,7 +9,7 @@ type Release = {
 
 let releases: Release[] = [];
 try {
-  const res = await fetch('https://api.github.com/repos/rustkit-ai/memo/releases');
+  const res = await fetch('https://api.github.com/repos/rustkit-ai/memo-agent/releases');
   const data: Release[] = await res.json();
   releases = data
     .filter((r) => r.published_at)
@@ -34,7 +34,7 @@ function formatDate(iso: string) {
       <div class="section-label reveal">Changelog</div>
       <h2 class="reveal">Latest releases</h2>
       <p class="section-sub reveal">
-        Recent updates to <a href="https://github.com/rustkit-ai/memo" target="_blank" rel="noopener">memo</a>.
+        Recent updates to <a href="https://github.com/rustkit-ai/memo-agent" target="_blank" rel="noopener">memo</a>.
       </p>
 
       <div class="releases-list reveal">
@@ -51,7 +51,7 @@ function formatDate(iso: string) {
         ))}
       </div>
 
-      <a href="https://github.com/rustkit-ai/memo/releases" target="_blank" rel="noopener" class="all-releases">
+      <a href="https://github.com/rustkit-ai/memo-agent/releases" target="_blank" rel="noopener" class="all-releases">
         View all releases →
       </a>
     </div>
