@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rustkit-ai.github.io/sitemap-index.xml
