@@ -1,65 +1,88 @@
 ---
-type Release = {
-  tag_name: string;
-  name: string;
-  published_at: string | null;
-  html_url: string;
-  body: string | null;
-};
-
-let releases: Release[] = [];
-try {
-  const res = await fetch('https://api.github.com/repos/rustkit-ai/aimemo/releases');
-  const data: Release[] = await res.json();
-  releases = data
-    .filter((r) => r.published_at)
-    .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())
-    .slice(0, 5);
-} catch {
-  // silently fail
-}
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  });
-}
 ---
 
-{releases.length > 0 && (
-  <section id="releases">
-    <div class="section-inner">
-      <div class="section-label reveal">Changelog</div>
-      <h2 class="reveal">Latest releases</h2>
-      <p class="section-sub reveal">
-        Recent updates to <a href="https://github.com/rustkit-ai/aimemo" target="_blank" rel="noopener">aimemo</a>.
-      </p>
+<section id="releases" style="display:none">
+  <div class="section-inner">
+    <div class="section-label reveal">Changelog</div>
+    <h2 class="reveal">Latest releases</h2>
+    <p class="section-sub reveal">
+      Recent updates to <a href="https://github.com/rustkit-ai/aimemo" target="_blank" rel="noopener">aimemo</a>.
+    </p>
 
-      <div class="releases-list reveal">
-        {releases.map((r, i) => (
-          <a href={r.html_url} target="_blank" rel="noopener" class={`release-item ${i === 0 ? 'latest' : ''}`}>
-            <div class="release-left">
-              <span class="release-tag">{r.tag_name}</span>
-              {i === 0 && <span class="release-badge">Latest</span>}
-            </div>
-            <div class="release-name">{r.name}</div>
-            <div class="release-date">{formatDate(r.published_at!)}</div>
-            <span class="release-arrow">→</span>
-          </a>
-        ))}
-      </div>
+    <div class="releases-list reveal" id="releases-list"></div>
 
-      <a href="https://github.com/rustkit-ai/aimemo/releases" target="_blank" rel="noopener" class="all-releases">
-        View all releases →
-      </a>
-    </div>
-  </section>
-)}
+    <a href="https://github.com/rustkit-ai/aimemo/releases" target="_blank" rel="noopener" class="all-releases">
+      View all releases →
+    </a>
+  </div>
+</section>
 
-<style>
-  .releases-list {
+<script>
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
+  type Release = {
+    tag_name: string;
+    name: string;
+    published_at: string | null;
+    html_url: string;
+    body: string | null;
+  };
+
+  async function loadRelease() {
+    try {
+      const res = await fetch('https://api.github.com/repos/rustkit-ai/aimemo/releases');
+      const data: Release[] = await res.json();
+      const releases = data
+        .filter((r) => r.published_at)
+        .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())
+        .slice(0, 1);
+
+      if (releases.length === 0) return;
+
+      const r = releases[0];
+      const list = document.getElementById('releases-list')!;
+      list.innerHTML = `
+        <a href="${r.html_url}" target="_blank" rel="noopener" class="release-item latest">
+          <div class="release-left">
+            <span class="release-tag">${r.tag_name}</span>
+            <span class="release-badge">Latest</span>
+          </div>
+          <div class="release-name">${r.name}</div>
+          <div class="release-date">${formatDate(r.published_at!)}</div>
+          <span class="release-arrow">→</span>
+        </a>
+      `;
+
+      const section = document.getElementById('releases')!;
+      section.style.display = '';
+
+      // Re-observe reveal elements now that the section is visible
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+
+      section.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
+    } catch {
+      // silently fail
+    }
+  }
+
+  loadRelease();
+</script>
+
+<style is:global>
+  #releases .releases-list {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
@@ -68,7 +91,7 @@ function formatDate(iso: string) {
     margin-bottom: 1.5rem;
   }
 
-  .release-item {
+  #releases .release-item {
     display: grid;
     grid-template-columns: auto 1fr auto auto;
     align-items: center;
@@ -81,19 +104,19 @@ function formatDate(iso: string) {
     transition: background 0.2s;
   }
 
-  .release-item:last-child { border-bottom: none; }
+  #releases .release-item:last-child { border-bottom: none; }
 
-  .release-item:hover { background: var(--bg-3); }
+  #releases .release-item:hover { background: var(--bg-3); }
 
-  .release-item.latest { background: var(--bg-3); }
+  #releases .release-item.latest { background: var(--bg-3); }
 
-  .release-left {
+  #releases .release-left {
     display: flex;
     align-items: center;
     gap: 0.6rem;
   }
 
-  .release-tag {
+  #releases .release-tag {
     font-family: 'Space Mono', monospace;
     font-size: 0.85rem;
     font-weight: 700;
@@ -102,7 +125,7 @@ function formatDate(iso: string) {
     min-width: 60px;
   }
 
-  .release-badge {
+  #releases .release-badge {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.62rem;
     padding: 0.15rem 0.45rem;
@@ -114,7 +137,7 @@ function formatDate(iso: string) {
     text-transform: uppercase;
   }
 
-  .release-name {
+  #releases .release-name {
     font-size: 0.88rem;
     color: var(--text-muted);
     font-family: 'IBM Plex Sans', sans-serif;
@@ -123,25 +146,25 @@ function formatDate(iso: string) {
     text-overflow: ellipsis;
   }
 
-  .release-date {
+  #releases .release-date {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.75rem;
     color: var(--text-dim);
     white-space: nowrap;
   }
 
-  .release-arrow {
+  #releases .release-arrow {
     color: var(--text-dim);
     font-size: 0.85rem;
     transition: transform 0.2s, color 0.2s;
   }
 
-  .release-item:hover .release-arrow {
+  #releases .release-item:hover .release-arrow {
     transform: translateX(3px);
     color: var(--rust);
   }
 
-  .all-releases {
+  #releases .all-releases {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.78rem;
     color: var(--text-dim);
@@ -149,13 +172,13 @@ function formatDate(iso: string) {
     transition: color 0.2s;
   }
 
-  .all-releases:hover { color: var(--rust); }
+  #releases .all-releases:hover { color: var(--rust); }
 
   @media (max-width: 640px) {
-    .release-item {
+    #releases .release-item {
       grid-template-columns: auto 1fr auto;
       gap: 0.6rem;
     }
-    .release-name { display: none; }
+    #releases .release-name { display: none; }
   }
 </style>

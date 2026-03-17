@@ -4,11 +4,17 @@ import { projects } from '../data/projects';
 type Repo = { name: string; stargazers_count: number };
 
 let repoStars: Record<string, number> = {};
+let publicRepoNames: Set<string> = new Set();
 try {
-  const res = await fetch('https://api.github.com/orgs/rustkit-ai/repos');
+  const res = await fetch('https://api.github.com/orgs/rustkit-ai/repos?type=public&per_page=100');
   const repos: Repo[] = await res.json();
-  repos.forEach((r) => { repoStars[r.name] = r.stargazers_count; });
+  repos.forEach((r) => {
+    repoStars[r.name] = r.stargazers_count;
+    publicRepoNames.add(r.name);
+  });
 } catch {}
+
+const visibleProjects = projects.filter((p) => publicRepoNames.size === 0 || publicRepoNames.has(p.slug));
 
 const icons: Record<string, string> = {
   'aimemo': 'brain',
@@ -24,7 +30,7 @@ const icons: Record<string, string> = {
     <p class="section-sub reveal">Open source tools designed to make AI-assisted development faster and smarter.</p>
 
     <div class="projects-grid">
-      {projects.map((p) => {
+      {visibleProjects.map((p) => {
         const stars = repoStars[p.slug] ?? 0;
         const icon = icons[p.slug] ?? 'search';
         return (
@@ -83,7 +89,7 @@ const icons: Record<string, string> = {
 <style>
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5px;
     border: 1.5px solid var(--border);
     border-radius: 6px;
