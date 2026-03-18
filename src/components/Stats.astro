@@ -1,0 +1,94 @@
+---
+const facts = [
+  {
+    value: '50%',
+    label: 'fewer tokens',
+    desc: 'tersify strips noise from code and text before it reaches your LLM — without losing meaning.',
+  },
+  {
+    value: '1 cmd',
+    label: 'to install',
+    desc: 'cargo install aimemo or cargo install tersify. No config files, no manual steps.',
+  },
+  {
+    value: '4',
+    label: 'AI editors',
+    desc: 'aimemo works with Claude Code, Cursor, Windsurf, and GitHub Copilot — out of the box, zero configuration.',
+  },
+  {
+    value: 'v0.5',
+    label: 'tersify',
+    desc: 'tersify v0.5.0 — language-aware compression for Rust, Python, JavaScript, and more.',
+  },
+];
+---
+
+<section class="stats">
+  <div class="section-inner">
+    <div class="section-label reveal">By the numbers</div>
+    <h2 class="reveal">Built to perform</h2>
+    <p class="section-sub reveal">No benchmarks against imaginary competitors — just what our tools actually do.</p>
+
+    <div class="facts-grid">
+      {facts.map((f) => (
+        <div class="fact-item reveal">
+          <div class="fact-value">{f.value}</div>
+          <div class="fact-label">{f.label}</div>
+          <p class="fact-desc">{f.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .stats {
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .facts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 0;
+    margin-top: 3rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .fact-item {
+    padding: 2rem 1.75rem;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+  }
+
+  .fact-item:hover { background: var(--bg-3); }
+
+  .fact-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--rust);
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .fact-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .fact-desc {
+    font-size: 0.83rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+  }
+</style>

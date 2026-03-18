@@ -15,9 +15,13 @@
       Rust tools built for the reality of AI-assisted development.
     </p>
 
+    <div class="install-tabs">
+      <button class="itab active" data-cmd="cargo install tersify">tersify</button>
+      <button class="itab" data-cmd="cargo install aimemo">aimemo</button>
+    </div>
     <div class="install-block">
       <span class="install-prompt">$</span>
-      <code id="install-cmd">cargo install aimemo</code>
+      <code id="install-cmd">cargo install tersify</code>
       <button class="copy-btn" id="copy-btn" aria-label="Copy install command">
         <svg id="icon-copy" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
@@ -132,6 +136,37 @@
   }
 
   /* Install block */
+  .install-tabs {
+    display: inline-flex;
+    gap: 0;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.4s;
+  }
+
+  .itab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.3rem 0.75rem;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    cursor: pointer;
+    letter-spacing: 0.06em;
+    transition: color 0.2s, background 0.2s, border-color 0.2s;
+  }
+
+  .itab:first-child { border-radius: 3px 0 0 3px; }
+  .itab:last-child { border-radius: 0 3px 3px 0; margin-left: -1px; }
+
+  .itab.active {
+    background: var(--rust-glow);
+    border-color: var(--rust-dim);
+    color: var(--rust);
+  }
+
+  .itab:not(.active):hover { color: var(--text); border-color: var(--border-hi); }
+
   .install-block {
     display: inline-flex;
     align-items: center;
@@ -230,8 +265,19 @@
   const iconCopy = document.getElementById('icon-copy');
   const iconCheck = document.getElementById('icon-check');
 
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.itab');
+  const cmdEl = document.getElementById('install-cmd')!;
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      tabs.forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      cmdEl.textContent = tab.dataset.cmd!;
+    });
+  });
+
   btn?.addEventListener('click', () => {
-    navigator.clipboard.writeText('cargo install aimemo');
+    navigator.clipboard.writeText(cmdEl.textContent!);
     btn.classList.add('copied');
     iconCopy!.style.display = 'none';
     iconCheck!.style.display = 'block';
