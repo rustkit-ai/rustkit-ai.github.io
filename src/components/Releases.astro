@@ -1,24 +1,23 @@
 ---
+import { projects } from '../data/projects';
+
+const releaseProjects = projects.filter((p) => p.hasReleases);
 ---
 
 <section id="releases" style="display:none">
   <div class="section-inner">
     <div class="section-label reveal">Changelog</div>
     <h2 class="reveal">Latest releases</h2>
-    <p class="section-sub reveal">
-      Recent updates to <a href="https://github.com/rustkit-ai/aimemo" target="_blank" rel="noopener">aimemo</a>.
-    </p>
+    <p class="section-sub reveal">Recent updates across our open source projects.</p>
 
     <div class="releases-list reveal" id="releases-list"></div>
 
-    <a href="https://github.com/rustkit-ai/aimemo/releases" target="_blank" rel="noopener" class="all-releases">
-      View all releases →
-    </a>
+    <div class="all-links reveal" id="all-links"></div>
   </div>
 </section>
 
-<script>
-  function formatDate(iso: string) {
+<script define:vars={{ releaseProjects }}>
+  function formatDate(iso) {
     return new Date(iso).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -26,59 +25,63 @@
     });
   }
 
-  type Release = {
-    tag_name: string;
-    name: string;
-    published_at: string | null;
-    html_url: string;
-    body: string | null;
-  };
+  async function loadReleases() {
+    const results = await Promise.all(
+      releaseProjects.map(async (p) => {
+        try {
+          const res = await fetch(`https://api.github.com/repos/rustkit-ai/${p.slug}/releases`);
+          const data = await res.json();
+          const latest = data
+            .filter((r) => r.published_at)
+            .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())[0];
+          return latest ? { project: p, release: latest } : null;
+        } catch {
+          return null;
+        }
+      })
+    );
 
-  async function loadRelease() {
-    try {
-      const res = await fetch('https://api.github.com/repos/rustkit-ai/aimemo/releases');
-      const data: Release[] = await res.json();
-      const releases = data
-        .filter((r) => r.published_at)
-        .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())
-        .slice(0, 1);
+    const valid = results.filter(Boolean);
+    if (valid.length === 0) return;
 
-      if (releases.length === 0) return;
+    const list = document.getElementById('releases-list');
+    const allLinks = document.getElementById('all-links');
 
-      const r = releases[0];
-      const list = document.getElementById('releases-list')!;
-      list.innerHTML = `
-        <a href="${r.html_url}" target="_blank" rel="noopener" class="release-item latest">
-          <div class="release-left">
-            <span class="release-tag">${r.tag_name}</span>
-            <span class="release-badge">Latest</span>
-          </div>
-          <div class="release-name">${r.name}</div>
-          <div class="release-date">${formatDate(r.published_at!)}</div>
-          <span class="release-arrow">→</span>
-        </a>
-      `;
+    list.innerHTML = valid.map(({ project: p, release: r }) => `
+      <a href="${r.html_url}" target="_blank" rel="noopener" class="release-item latest">
+        <div class="release-left">
+          <span class="release-project">${p.slug}</span>
+          <span class="release-tag">${r.tag_name}</span>
+          <span class="release-badge">Latest</span>
+        </div>
+        <div class="release-name">${r.name}</div>
+        <div class="release-date">${formatDate(r.published_at)}</div>
+        <span class="release-arrow">→</span>
+      </a>
+    `).join('');
 
-      const section = document.getElementById('releases')!;
-      section.style.display = '';
+    allLinks.innerHTML = valid.map(({ project: p }) => `
+      <a href="${p.github}/releases" target="_blank" rel="noopener" class="all-releases">
+        All ${p.slug} releases →
+      </a>
+    `).join('');
 
-      // Re-observe reveal elements now that the section is visible
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1 });
+    const section = document.getElementById('releases');
+    section.style.display = '';
 
-      section.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    } catch {
-      // silently fail
-    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    section.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
   }
 
-  loadRelease();
+  loadReleases();
 </script>
 
 <style is:global>
@@ -105,9 +108,7 @@
   }
 
   #releases .release-item:last-child { border-bottom: none; }
-
   #releases .release-item:hover { background: var(--bg-3); }
-
   #releases .release-item.latest { background: var(--bg-3); }
 
   #releases .release-left {
@@ -116,13 +117,20 @@
     gap: 0.6rem;
   }
 
+  #releases .release-project {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
   #releases .release-tag {
     font-family: 'Space Mono', monospace;
     font-size: 0.85rem;
     font-weight: 700;
     color: var(--text);
     letter-spacing: -0.02em;
-    min-width: 60px;
   }
 
   #releases .release-badge {
@@ -162,6 +170,12 @@
   #releases .release-item:hover .release-arrow {
     transform: translateX(3px);
     color: var(--rust);
+  }
+
+  #releases .all-links {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
   }
 
   #releases .all-releases {
