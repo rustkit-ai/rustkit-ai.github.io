@@ -17,9 +17,8 @@ try {
 const visibleProjects = projects.filter((p) => publicRepoNames.size === 0 || publicRepoNames.has(p.slug));
 
 const icons: Record<string, string> = {
+  'tersify': 'zap',
   'aimemo': 'brain',
-  'rustkit-mcp': 'activity',
-  'rustkit-semantic': 'search',
 };
 ---
 
@@ -37,19 +36,14 @@ const icons: Record<string, string> = {
           <a href={`/projects/${p.slug}`} class="project-card reveal">
             <div class="card-header">
               <div class="card-icon">
+                {icon === 'zap' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                )}
                 {icon === 'brain' && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><circle cx="12" cy="12" r="3"/>
-                  </svg>
-                )}
-                {icon === 'activity' && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-                  </svg>
-                )}
-                {icon === 'search' && (
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                   </svg>
                 )}
               </div>
