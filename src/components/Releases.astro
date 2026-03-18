@@ -4,13 +4,16 @@ import { projects } from '../data/projects';
 const releaseProjects = projects.filter((p) => p.hasReleases);
 ---
 
-<section id="releases" style="display:none">
+<section id="releases">
   <div class="section-inner">
     <div class="section-label reveal">Changelog</div>
     <h2 class="reveal">Latest releases</h2>
     <p class="section-sub reveal">Recent updates across our open source projects.</p>
 
-    <div class="releases-list reveal" id="releases-list"></div>
+    <div class="releases-list reveal" id="releases-list">
+      <div class="skeleton-item"><div class="sk sk-tag"></div><div class="sk sk-name"></div><div class="sk sk-date"></div></div>
+      <div class="skeleton-item"><div class="sk sk-tag"></div><div class="sk sk-name"></div><div class="sk sk-date"></div></div>
+    </div>
 
     <div class="all-links reveal" id="all-links"></div>
   </div>
@@ -42,10 +45,13 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     );
 
     const valid = results.filter(Boolean);
-    if (valid.length === 0) return;
-
     const list = document.getElementById('releases-list');
     const allLinks = document.getElementById('all-links');
+
+    if (valid.length === 0) {
+      list.innerHTML = '<p class="releases-empty">No releases found.</p>';
+      return;
+    }
 
     list.innerHTML = valid.map(({ project: p, release: r }) => `
       <a href="${r.html_url}" target="_blank" rel="noopener" class="release-item latest">
@@ -66,19 +72,6 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
       </a>
     `).join('');
 
-    const section = document.getElementById('releases');
-    section.style.display = '';
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-
-    section.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
   }
 
   loadReleases();
@@ -187,6 +180,41 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
   }
 
   #releases .all-releases:hover { color: var(--rust); }
+
+  #releases .releases-empty {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    padding: 1.5rem;
+    text-align: center;
+  }
+
+  /* Skeleton */
+  #releases .skeleton-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+  }
+
+  #releases .skeleton-item:last-child { border-bottom: none; }
+
+  #releases .sk {
+    background: var(--border-hi);
+    border-radius: 3px;
+    animation: sk-pulse 1.4s ease-in-out infinite;
+  }
+
+  #releases .sk-tag  { width: 60px; height: 14px; }
+  #releases .sk-name { width: 160px; height: 12px; flex: 1; max-width: 200px; }
+  #releases .sk-date { width: 80px; height: 12px; margin-left: auto; }
+
+  @keyframes sk-pulse {
+    0%, 100% { opacity: 0.4; }
+    50%       { opacity: 0.8; }
+  }
 
   @media (max-width: 640px) {
     #releases .release-item {
