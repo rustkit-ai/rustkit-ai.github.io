@@ -3,74 +3,53 @@ const editors = [
   {
     name: 'Claude Code',
     id: 'claude-code',
-    desc: 'aimemo auto-injects memory via CLAUDE.md. trimcp slots into MCP config.',
+    desc: 'aimemo injects memory into CLAUDE.md and sets up hooks automatically. trimcp auto-detects Claude Code and wraps your existing MCP servers.',
     config: `# Install
 cargo install aimemo trimcp
 
-# Init memory in your project
-aimemo init
+# Set up aimemo (writes to CLAUDE.md, configures hooks)
+aimemo setup --claude
 
-# Add trimcp to ~/.claude/settings.json
-{
-  "mcpServers": {
-    "trimcp": {
-      "command": "trimcp",
-      "args": ["--upstream", "your-mcp-server"]
-    }
-  }
-}`,
+# Set up trimcp (auto-detects Claude Code MCP config)
+trimcp setup`,
   },
   {
     name: 'Cursor',
     id: 'cursor',
-    desc: 'aimemo writes to .cursorrules. trimcp wraps your MCP servers transparently.',
+    desc: 'aimemo writes memory to .cursor/rules/aimemo.mdc. trimcp auto-detects Cursor and wraps your MCP servers.',
     config: `# Install
 cargo install aimemo trimcp
 
-# Init memory (writes to .cursorrules)
-aimemo init --cursor
+# Set up aimemo (writes to .cursor/rules/aimemo.mdc)
+aimemo setup --cursor
 
-# Add trimcp to .cursor/mcp.json
-{
-  "mcpServers": {
-    "trimcp": {
-      "command": "trimcp",
-      "args": ["--upstream", "your-mcp-server"]
-    }
-  }
-}`,
+# Set up trimcp (auto-detects Cursor MCP config)
+trimcp setup`,
   },
   {
     name: 'Windsurf',
     id: 'windsurf',
-    desc: 'aimemo writes to .windsurfrules. MCP config works the same way.',
+    desc: 'aimemo writes memory to .windsurfrules. trimcp auto-detects Windsurf and wraps your MCP servers.',
     config: `# Install
 cargo install aimemo trimcp
 
-# Init memory (writes to .windsurfrules)
-aimemo init --windsurf
+# Set up aimemo (writes to .windsurfrules)
+aimemo setup --windsurf
 
-# Add trimcp to ~/.codeium/windsurf/mcp_config.json
-{
-  "mcpServers": {
-    "trimcp": {
-      "command": "trimcp",
-      "args": ["--upstream", "your-mcp-server"]
-    }
-  }
-}`,
+# Set up trimcp (auto-detects Windsurf MCP config)
+trimcp setup`,
   },
   {
     name: 'Copilot',
     id: 'copilot',
-    desc: 'aimemo writes to .github/copilot-instructions.md. tersify works as a CLI preprocessor.',
+    desc: 'aimemo writes memory to .github/copilot-instructions.md. tersify compresses code before you paste it as context.',
     config: `# Install
 cargo install aimemo tersify
 
-# Init memory (writes to .github/copilot-instructions.md)
-aimemo init --copilot
+# Set up aimemo (writes to .github/copilot-instructions.md)
+aimemo setup --copilot
 
-# Compress a file before sending as context
+# Compress a file before using it as context
 tersify src/main.rs | pbcopy`,
   },
 ];

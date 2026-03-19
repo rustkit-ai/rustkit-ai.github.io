@@ -7,65 +7,82 @@
     <h2 class="reveal">One stack, zero friction</h2>
     <p class="section-sub reveal">Each tool solves a distinct problem. Together they cover the full cost of AI-assisted development.</p>
 
-    <div class="flow reveal">
-      <div class="flow-col">
-        <div class="flow-label">Your editor sends a request</div>
-        <div class="flow-node editor-node">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="eco-layout reveal">
+
+      <!-- Left: flow diagram -->
+      <div class="eco-flow">
+        <div class="flow-node node-editor">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/>
           </svg>
-          Claude Code · Cursor · Windsurf
+          Your editor
         </div>
-      </div>
 
-      <div class="flow-arrow">↓</div>
-
-      <div class="flow-row">
-        <div class="flow-tool">
-          <div class="tool-chip chip-rust">trimcp</div>
-          <p>MCP tool outputs compressed before they reach the model</p>
-          <span class="tool-stat">−60–90% tokens on MCP responses</span>
+        <div class="flow-connector">
+          <div class="connector-line"></div>
+          <div class="connector-branches">
+            <div class="branch branch-left">
+              <div class="branch-line"></div>
+              <div class="flow-node node-tool" data-tool="trimcp">trimcp</div>
+            </div>
+            <div class="branch branch-right">
+              <div class="branch-line"></div>
+              <div class="flow-node node-tool" data-tool="tersify">tersify</div>
+            </div>
+          </div>
         </div>
-        <div class="flow-tool">
-          <div class="tool-chip chip-rust">tersify</div>
-          <p>Code and text stripped of noise before being sent</p>
-          <span class="tool-stat">−50% tokens on code context</span>
+
+        <div class="flow-connector">
+          <div class="connector-branches">
+            <div class="branch branch-left">
+              <div class="branch-line"></div>
+              <div class="flow-node node-tool" data-tool="semtree">semtree</div>
+            </div>
+            <div class="branch branch-right">
+              <div class="branch-line"></div>
+              <div class="flow-node node-tool" data-tool="aimemo">aimemo</div>
+            </div>
+          </div>
+          <div class="connector-line"></div>
         </div>
-      </div>
 
-      <div class="flow-arrow">↓</div>
-
-      <div class="flow-row">
-        <div class="flow-tool">
-          <div class="tool-chip chip-rust">semtree</div>
-          <p>Codebase parsed and indexed semantically with tree-sitter</p>
-          <span class="tool-stat">Precise context — only what's relevant</span>
-        </div>
-        <div class="flow-tool">
-          <div class="tool-chip chip-rust">aimemo</div>
-          <p>Decisions, conventions, and tasks remembered across sessions</p>
-          <span class="tool-stat">No repeated explanations</span>
-        </div>
-      </div>
-
-      <div class="flow-arrow">↓</div>
-
-      <div class="flow-col">
-        <div class="flow-label">The model gets what it needs — nothing more</div>
-        <div class="flow-node result-node">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div class="flow-node node-result">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
           </svg>
-          Faster · cheaper · smarter completions
+          Faster · cheaper · smarter
         </div>
       </div>
-    </div>
 
-    <div class="also-note reveal">
-      <span class="note-label">Also standalone</span>
-      <span class="note-text">
-        <a href="/projects/semstore">semstore</a> is the vector store powering semtree — available as a library to build your own semantic search into any Rust app.
-      </span>
+      <!-- Right: tool descriptions -->
+      <div class="eco-details">
+        <div class="eco-item" data-tool="trimcp">
+          <div class="eco-name">trimcp</div>
+          <p>MCP tool outputs compressed before they reach the model.</p>
+          <span class="eco-stat">−60–90% tokens on MCP responses</span>
+        </div>
+        <div class="eco-item" data-tool="tersify">
+          <div class="eco-name">tersify</div>
+          <p>Code and text stripped of noise before being sent.</p>
+          <span class="eco-stat">−50% tokens on code context</span>
+        </div>
+        <div class="eco-item" data-tool="semtree">
+          <div class="eco-name">semtree</div>
+          <p>Codebase indexed semantically — only relevant code injected.</p>
+          <span class="eco-stat">Precise context, no noise</span>
+        </div>
+        <div class="eco-item" data-tool="aimemo">
+          <div class="eco-name">aimemo</div>
+          <p>Decisions and conventions remembered across sessions.</p>
+          <span class="eco-stat">No repeated explanations</span>
+        </div>
+
+        <div class="eco-note">
+          <span class="note-tag">Also standalone</span>
+          <span><a href="/projects/semstore">semstore</a> is the vector store powering semtree — available as a library for any Rust app.</span>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -76,126 +93,159 @@
     border-bottom: 1px solid var(--border);
   }
 
-  .flow {
+  .eco-layout {
     margin-top: 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  /* Flow diagram */
+  .eco-flow {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0;
-  }
-
-  .flow-arrow {
-    font-size: 1.25rem;
-    color: var(--rust-dim);
-    padding: 0.75rem 0;
-    line-height: 1;
-  }
-
-  .flow-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    width: 100%;
-    max-width: 600px;
-  }
-
-  .flow-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.72rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    user-select: none;
   }
 
   .flow-node {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    padding: 0.65rem 1.5rem;
+    gap: 0.5rem;
+    padding: 0.55rem 1.25rem;
     border-radius: 4px;
     font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.82rem;
-    width: 100%;
-    max-width: 480px;
-    justify-content: center;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    position: relative;
+    z-index: 1;
   }
 
-  .editor-node {
+  .node-editor {
     background: var(--bg-2);
     border: 1px solid var(--border-hi);
     color: var(--text-muted);
   }
 
-  .result-node {
+  .node-result {
     background: var(--rust-glow);
     border: 1px solid var(--rust-dim);
     color: var(--rust);
   }
 
-  .flow-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
+  .node-tool {
+    background: var(--bg-3);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    cursor: default;
+  }
+
+  .node-tool.active,
+  .node-tool:hover {
+    border-color: var(--rust-dim);
+    color: var(--rust);
+    background: var(--rust-glow);
+  }
+
+  .flow-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
-    max-width: 700px;
+    max-width: 260px;
+  }
+
+  .connector-line {
+    width: 1px;
+    height: 20px;
     background: var(--border);
+  }
+
+  .connector-branches {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 0;
+  }
+
+  .branch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  .branch-line {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  /* Details panel */
+  .eco-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
     border: 1px solid var(--border);
     border-radius: 6px;
     overflow: hidden;
   }
 
-  .flow-tool {
-    background: var(--bg-2);
-    padding: 1.25rem 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  .eco-item {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s;
+    cursor: default;
   }
 
-  .tool-chip {
+  .eco-item:last-of-type { border-bottom: none; }
+  .eco-item:hover,
+  .eco-item.active { background: var(--bg-3); }
+
+  .eco-name {
     font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 700;
+    color: var(--rust);
     letter-spacing: -0.02em;
-    display: inline-block;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.3rem;
   }
 
-  .chip-rust { color: var(--rust); }
-
-  .flow-tool p {
+  .eco-item p {
     font-size: 0.82rem;
     color: var(--text-muted);
-    line-height: 1.6;
-    margin: 0;
+    line-height: 1.55;
+    margin: 0 0 0.4rem;
   }
 
-  .tool-stat {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    border-top: 1px solid var(--border);
-    padding-top: 0.5rem;
-    margin-top: 0.25rem;
-  }
-
-  .also-note {
-    margin-top: 2.5rem;
-    display: flex;
-    align-items: baseline;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    background: var(--bg-2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    max-width: 700px;
-    width: 100%;
-  }
-
-  .note-label {
+  .eco-stat {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.68rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  .eco-note {
+    padding: 0.85rem 1.25rem;
+    background: var(--bg-2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 0.6rem;
+    align-items: baseline;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .note-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--rust);
@@ -203,21 +253,30 @@
     flex-shrink: 0;
   }
 
-  .note-text {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
+  .eco-note a { color: var(--rust); text-decoration: none; }
+  .eco-note a:hover { text-decoration: underline; }
 
-  .note-text a {
-    color: var(--rust);
-    text-decoration: none;
-  }
-
-  .note-text a:hover { text-decoration: underline; }
-
-  @media (max-width: 640px) {
-    .flow-row { grid-template-columns: 1fr; }
-    .also-note { flex-direction: column; gap: 0.4rem; }
+  @media (max-width: 860px) {
+    .eco-layout { grid-template-columns: 1fr; gap: 2rem; }
+    .eco-flow { display: none; }
   }
 </style>
+
+<script>
+  // Sync hover between flow nodes and detail items
+  const tools = ['trimcp', 'tersify', 'semtree', 'aimemo'];
+
+  tools.forEach((tool) => {
+    const node = document.querySelector<HTMLElement>(`.node-tool[data-tool="${tool}"]`);
+    const item = document.querySelector<HTMLElement>(`.eco-item[data-tool="${tool}"]`);
+    if (!node || !item) return;
+
+    const activate = () => { node.classList.add('active'); item.classList.add('active'); };
+    const deactivate = () => { node.classList.remove('active'); item.classList.remove('active'); };
+
+    node.addEventListener('mouseenter', activate);
+    node.addEventListener('mouseleave', deactivate);
+    item.addEventListener('mouseenter', activate);
+    item.addEventListener('mouseleave', deactivate);
+  });
+</script>
