@@ -1,0 +1,244 @@
+---
+const editors = [
+  {
+    name: 'Claude Code',
+    id: 'claude-code',
+    desc: 'aimemo auto-injects memory via CLAUDE.md. trimcp slots into MCP config.',
+    config: `# Install
+cargo install aimemo trimcp
+
+# Init memory in your project
+aimemo init
+
+# Add trimcp to ~/.claude/settings.json
+{
+  "mcpServers": {
+    "trimcp": {
+      "command": "trimcp",
+      "args": ["--upstream", "your-mcp-server"]
+    }
+  }
+}`,
+  },
+  {
+    name: 'Cursor',
+    id: 'cursor',
+    desc: 'aimemo writes to .cursorrules. trimcp wraps your MCP servers transparently.',
+    config: `# Install
+cargo install aimemo trimcp
+
+# Init memory (writes to .cursorrules)
+aimemo init --cursor
+
+# Add trimcp to .cursor/mcp.json
+{
+  "mcpServers": {
+    "trimcp": {
+      "command": "trimcp",
+      "args": ["--upstream", "your-mcp-server"]
+    }
+  }
+}`,
+  },
+  {
+    name: 'Windsurf',
+    id: 'windsurf',
+    desc: 'aimemo writes to .windsurfrules. MCP config works the same way.',
+    config: `# Install
+cargo install aimemo trimcp
+
+# Init memory (writes to .windsurfrules)
+aimemo init --windsurf
+
+# Add trimcp to ~/.codeium/windsurf/mcp_config.json
+{
+  "mcpServers": {
+    "trimcp": {
+      "command": "trimcp",
+      "args": ["--upstream", "your-mcp-server"]
+    }
+  }
+}`,
+  },
+  {
+    name: 'Copilot',
+    id: 'copilot',
+    desc: 'aimemo writes to .github/copilot-instructions.md. tersify works as a CLI preprocessor.',
+    config: `# Install
+cargo install aimemo tersify
+
+# Init memory (writes to .github/copilot-instructions.md)
+aimemo init --copilot
+
+# Compress a file before sending as context
+tersify src/main.rs | pbcopy`,
+  },
+];
+---
+
+<section class="integrations" id="integrations">
+  <div class="section-inner">
+    <div class="section-label reveal">Compatibility</div>
+    <h2 class="reveal">Works with your editor</h2>
+    <p class="section-sub reveal">Zero configuration for the basics — one command and you're running.</p>
+
+    <div class="editor-tabs reveal" role="tablist">
+      {editors.map((e, i) => (
+        <button
+          class={`etab ${i === 0 ? 'active' : ''}`}
+          data-target={e.id}
+          role="tab"
+          aria-selected={i === 0 ? 'true' : 'false'}
+        >
+          {e.name}
+        </button>
+      ))}
+    </div>
+
+    <div class="editor-panels">
+      {editors.map((e, i) => (
+        <div class={`editor-panel ${i === 0 ? 'active' : ''}`} id={`panel-${e.id}`} role="tabpanel">
+          <div class="panel-desc">{e.desc}</div>
+          <div class="panel-code">
+            <div class="code-header">
+              <span class="code-lang">shell</span>
+              <button class="copy-snippet" data-code={e.config} aria-label="Copy">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                </svg>
+              </button>
+            </div>
+            <pre><code>{e.config}</code></pre>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .integrations {
+    border-top: 1px solid var(--border);
+  }
+
+  .editor-tabs {
+    display: flex;
+    gap: 0;
+    margin-top: 3rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .etab {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    padding: 0.6rem 1.25rem;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    letter-spacing: 0.04em;
+    transition: color 0.2s, border-color 0.2s;
+    margin-bottom: -1px;
+  }
+
+  .etab:hover { color: var(--text); }
+  .etab.active { color: var(--rust); border-bottom-color: var(--rust); }
+
+  .editor-panels {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    overflow: hidden;
+  }
+
+  .editor-panel { display: none; }
+  .editor-panel.active { display: block; }
+
+  .panel-desc {
+    padding: 1.25rem 1.5rem;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+  }
+
+  .panel-code { position: relative; }
+
+  .code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+    background: var(--bg-3);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-lang {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .copy-snippet {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    padding: 0.2rem;
+    border-radius: 3px;
+    transition: color 0.2s;
+  }
+
+  .copy-snippet:hover { color: var(--text); }
+  .copy-snippet.copied { color: #4caf50; }
+
+  .panel-code pre {
+    margin: 0;
+    padding: 1.5rem;
+    background: var(--bg);
+    overflow-x: auto;
+  }
+
+  .panel-code code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+
+  @media (max-width: 640px) {
+    .editor-tabs { overflow-x: auto; }
+    .etab { white-space: nowrap; padding: 0.6rem 1rem; }
+  }
+</style>
+
+<script>
+  const tabs = document.querySelectorAll<HTMLButtonElement>('.etab');
+  const panels = document.querySelectorAll<HTMLElement>('.editor-panel');
+
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.target!;
+      tabs.forEach((t) => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
+      panels.forEach((p) => p.classList.remove('active'));
+      tab.classList.add('active');
+      tab.setAttribute('aria-selected', 'true');
+      document.getElementById(`panel-${target}`)?.classList.add('active');
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.copy-snippet').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(btn.dataset.code ?? '');
+      btn.classList.add('copied');
+      setTimeout(() => btn.classList.remove('copied'), 2000);
+    });
+  });
+</script>

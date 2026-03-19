@@ -1,0 +1,152 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="Search — rustkit-ai" description="Search across all rustkit-ai projects and documentation.">
+  <Nav />
+  <main class="search-page">
+    <div class="page-inner">
+      <div class="page-header">
+        <div class="section-label">Search</div>
+        <h1>Find anything</h1>
+        <p class="page-sub">Search across all projects and documentation.</p>
+      </div>
+      <div id="search-container"></div>
+    </div>
+  </main>
+  <Footer />
+</Layout>
+
+<link rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+<script src="/pagefind/pagefind-ui.js" is:inline></script>
+<script>
+  // @ts-ignore
+  new PagefindUI({
+    element: '#search-container',
+    showSubResults: true,
+    resetStyles: false,
+    translations: {
+      placeholder: 'Search projects, docs…',
+    },
+  });
+</script>
+
+<style>
+  .search-page {
+    min-height: 100vh;
+    padding: 7rem 2rem 4rem;
+  }
+
+  .page-inner {
+    max-width: 760px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+  }
+
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--rust);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    margin-bottom: 0.75rem;
+  }
+
+  .page-sub {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* Override Pagefind UI styles to match theme */
+  :global(#search-container .pagefind-ui__search-input) {
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 0.9rem !important;
+    background: var(--bg-2) !important;
+    border: 1px solid var(--border-hi) !important;
+    color: var(--text) !important;
+    border-radius: 4px !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  :global(#search-container .pagefind-ui__search-input:focus) {
+    outline: none !important;
+    border-color: var(--rust-dim) !important;
+  }
+
+  :global(#search-container .pagefind-ui__search-clear) {
+    color: var(--text-dim) !important;
+  }
+
+  :global(#search-container .pagefind-ui__result) {
+    border-bottom: 1px solid var(--border) !important;
+    padding: 1.25rem 0 !important;
+  }
+
+  :global(#search-container .pagefind-ui__result-title a) {
+    font-family: 'Space Mono', monospace !important;
+    font-size: 0.95rem !important;
+    color: var(--text) !important;
+    text-decoration: none !important;
+  }
+
+  :global(#search-container .pagefind-ui__result-title a:hover) {
+    color: var(--rust) !important;
+  }
+
+  :global(#search-container .pagefind-ui__result-excerpt) {
+    font-size: 0.85rem !important;
+    color: var(--text-muted) !important;
+    line-height: 1.7 !important;
+  }
+
+  :global(#search-container mark) {
+    background: var(--rust-glow) !important;
+    color: var(--rust) !important;
+    border-radius: 2px !important;
+  }
+
+  :global(#search-container .pagefind-ui__message) {
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 0.82rem !important;
+    color: var(--text-dim) !important;
+  }
+
+  :global(#search-container .pagefind-ui__suppressed) {
+    color: var(--text-dim) !important;
+    font-size: 0.8rem !important;
+  }
+
+  :global(#search-container .pagefind-ui__button) {
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 0.78rem !important;
+    background: var(--bg-2) !important;
+    border: 1px solid var(--border-hi) !important;
+    color: var(--text-muted) !important;
+    border-radius: 3px !important;
+    padding: 0.5rem 1rem !important;
+    cursor: pointer !important;
+    transition: color 0.2s, border-color 0.2s !important;
+  }
+
+  :global(#search-container .pagefind-ui__button:hover) {
+    color: var(--text) !important;
+    border-color: var(--text-dim) !important;
+  }
+
+  @media (max-width: 640px) {
+    .search-page { padding: 6rem 1.25rem 3rem; }
+  }
+</style>
