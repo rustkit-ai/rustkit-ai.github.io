@@ -19,6 +19,9 @@ const visibleProjects = projects.filter((p) => publicRepoNames.size === 0 || pub
 const icons: Record<string, string> = {
   'tersify': 'zap',
   'aimemo': 'brain',
+  'semtree': 'tree',
+  'semstore': 'database',
+  'trimcp': 'filter',
 };
 ---
 
@@ -44,6 +47,21 @@ const icons: Record<string, string> = {
                 {icon === 'brain' && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><circle cx="12" cy="12" r="3"/>
+                  </svg>
+                )}
+                {icon === 'tree' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L8 8H4l4 5H5l7 9 7-9h-3l4-5h-4L12 2z"/>
+                  </svg>
+                )}
+                {icon === 'database' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+                  </svg>
+                )}
+                {icon === 'filter' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
                   </svg>
                 )}
               </div>

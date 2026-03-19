@@ -49,7 +49,7 @@ The result: lightning-fast semantic search over your code, no cloud required. Us
 Supports Rust, Python, JavaScript, TypeScript, and Go out of the box.`,
     github: 'https://github.com/rustkit-ai/semtree',
     crates: 'https://crates.io/crates/semtree-core',
-    install: 'cargo install semtree',
+    install: 'cargo install semtree-cli',
     language: 'Rust',
     hasReleases: true,
   },
