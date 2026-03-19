@@ -1,7 +1,50 @@
 ---
 import { projects } from '../data/projects';
+import { ghFetch } from '../lib/github';
+
+type Release = {
+  tag_name: string;
+  name: string;
+  published_at: string | null;
+  html_url: string;
+};
+
+type ProjectRelease = {
+  slug: string;
+  github: string;
+  release: Release;
+};
 
 const releaseProjects = projects.filter((p) => p.hasReleases);
+
+const results = await Promise.all(
+  releaseProjects.map(async (p) => {
+    try {
+      const res = await ghFetch(`repos/rustkit-ai/${p.slug}/releases`);
+      const data: Release[] = await res.json();
+      const latest = data
+        .filter((r) => r.published_at)
+        .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime())[0];
+      return latest ? { slug: p.slug, github: p.github, release: latest } : null;
+    } catch {
+      return null;
+    }
+  })
+);
+
+const releases: ProjectRelease[] = results
+  .filter((r): r is ProjectRelease => r !== null)
+  .sort((a, b) =>
+    new Date(b.release.published_at!).getTime() - new Date(a.release.published_at!).getTime()
+  );
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+}
 ---
 
 <section id="releases">
@@ -10,75 +53,39 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     <h2 class="reveal">Latest releases</h2>
     <p class="section-sub reveal">Recent updates across our open source projects.</p>
 
-    <div class="releases-list reveal" id="releases-list">
-      <div class="skeleton-item"><div class="sk sk-tag"></div><div class="sk sk-name"></div><div class="sk sk-date"></div></div>
-      <div class="skeleton-item"><div class="sk sk-tag"></div><div class="sk sk-name"></div><div class="sk sk-date"></div></div>
+    <div class="releases-list reveal">
+      {releases.length === 0 ? (
+        <p class="releases-empty">No releases found.</p>
+      ) : (
+        releases.map((item) => (
+          <a href={item.release.html_url} target="_blank" rel="noopener" class="release-item">
+            <div class="release-left">
+              <span class="release-project">{item.slug}</span>
+              <span class="release-tag">{item.release.tag_name}</span>
+              <span class="release-badge">Latest</span>
+            </div>
+            <div class="release-name">{item.release.name}</div>
+            <div class="release-date">{formatDate(item.release.published_at!)}</div>
+            <span class="release-arrow">→</span>
+          </a>
+        ))
+      )}
     </div>
 
-    <div class="all-links reveal" id="all-links"></div>
+    {releases.length > 0 && (
+      <div class="all-links reveal">
+        {releases.map((item) => (
+          <a href={`${item.github}/releases`} target="_blank" rel="noopener" class="all-releases">
+            All {item.slug} releases →
+          </a>
+        ))}
+      </div>
+    )}
   </div>
 </section>
 
-<script define:vars={{ releaseProjects }}>
-  function formatDate(iso) {
-    return new Date(iso).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  }
-
-  async function loadReleases() {
-    const results = await Promise.all(
-      releaseProjects.map(async (p) => {
-        try {
-          const res = await fetch(`https://api.github.com/repos/rustkit-ai/${p.slug}/releases`);
-          const data = await res.json();
-          const latest = data
-            .filter((r) => r.published_at)
-            .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())[0];
-          return latest ? { project: p, release: latest } : null;
-        } catch {
-          return null;
-        }
-      })
-    );
-
-    const valid = results.filter(Boolean);
-    const list = document.getElementById('releases-list');
-    const allLinks = document.getElementById('all-links');
-
-    if (valid.length === 0) {
-      list.innerHTML = '<p class="releases-empty">No releases found.</p>';
-      return;
-    }
-
-    list.innerHTML = valid.map(({ project: p, release: r }) => `
-      <a href="${r.html_url}" target="_blank" rel="noopener" class="release-item latest">
-        <div class="release-left">
-          <span class="release-project">${p.slug}</span>
-          <span class="release-tag">${r.tag_name}</span>
-          <span class="release-badge">Latest</span>
-        </div>
-        <div class="release-name">${r.name}</div>
-        <div class="release-date">${formatDate(r.published_at)}</div>
-        <span class="release-arrow">→</span>
-      </a>
-    `).join('');
-
-    allLinks.innerHTML = valid.map(({ project: p }) => `
-      <a href="${p.github}/releases" target="_blank" rel="noopener" class="all-releases">
-        All ${p.slug} releases →
-      </a>
-    `).join('');
-
-  }
-
-  loadReleases();
-</script>
-
-<style is:global>
-  #releases .releases-list {
+<style>
+  .releases-list {
     display: flex;
     flex-direction: column;
     border: 1px solid var(--border);
@@ -87,7 +94,7 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     margin-bottom: 1.5rem;
   }
 
-  #releases .release-item {
+  .release-item {
     display: grid;
     grid-template-columns: auto 1fr auto auto;
     align-items: center;
@@ -100,17 +107,16 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     transition: background 0.2s;
   }
 
-  #releases .release-item:last-child { border-bottom: none; }
-  #releases .release-item:hover { background: var(--bg-3); }
-  #releases .release-item.latest { background: var(--bg-3); }
+  .release-item:last-child { border-bottom: none; }
+  .release-item:hover { background: var(--bg-3); }
 
-  #releases .release-left {
+  .release-left {
     display: flex;
     align-items: center;
     gap: 0.6rem;
   }
 
-  #releases .release-project {
+  .release-project {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.72rem;
     color: var(--text-dim);
@@ -118,7 +124,7 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     letter-spacing: 0.08em;
   }
 
-  #releases .release-tag {
+  .release-tag {
     font-family: 'Space Mono', monospace;
     font-size: 0.85rem;
     font-weight: 700;
@@ -126,7 +132,7 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     letter-spacing: -0.02em;
   }
 
-  #releases .release-badge {
+  .release-badge {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.62rem;
     padding: 0.15rem 0.45rem;
@@ -138,40 +144,39 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     text-transform: uppercase;
   }
 
-  #releases .release-name {
+  .release-name {
     font-size: 0.88rem;
     color: var(--text-muted);
-    font-family: 'IBM Plex Sans', sans-serif;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  #releases .release-date {
+  .release-date {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.75rem;
     color: var(--text-dim);
     white-space: nowrap;
   }
 
-  #releases .release-arrow {
+  .release-arrow {
     color: var(--text-dim);
     font-size: 0.85rem;
     transition: transform 0.2s, color 0.2s;
   }
 
-  #releases .release-item:hover .release-arrow {
+  .release-item:hover .release-arrow {
     transform: translateX(3px);
     color: var(--rust);
   }
 
-  #releases .all-links {
+  .all-links {
     display: flex;
     gap: 1.5rem;
     flex-wrap: wrap;
   }
 
-  #releases .all-releases {
+  .all-releases {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.78rem;
     color: var(--text-dim);
@@ -179,9 +184,9 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     transition: color 0.2s;
   }
 
-  #releases .all-releases:hover { color: var(--rust); }
+  .all-releases:hover { color: var(--rust); }
 
-  #releases .releases-empty {
+  .releases-empty {
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.8rem;
     color: var(--text-dim);
@@ -189,38 +194,11 @@ const releaseProjects = projects.filter((p) => p.hasReleases);
     text-align: center;
   }
 
-  /* Skeleton */
-  #releases .skeleton-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg-2);
-  }
-
-  #releases .skeleton-item:last-child { border-bottom: none; }
-
-  #releases .sk {
-    background: var(--border-hi);
-    border-radius: 3px;
-    animation: sk-pulse 1.4s ease-in-out infinite;
-  }
-
-  #releases .sk-tag  { width: 60px; height: 14px; }
-  #releases .sk-name { width: 160px; height: 12px; flex: 1; max-width: 200px; }
-  #releases .sk-date { width: 80px; height: 12px; margin-left: auto; }
-
-  @keyframes sk-pulse {
-    0%, 100% { opacity: 0.4; }
-    50%       { opacity: 0.8; }
-  }
-
   @media (max-width: 640px) {
-    #releases .release-item {
+    .release-item {
       grid-template-columns: auto 1fr auto;
       gap: 0.6rem;
     }
-    #releases .release-name { display: none; }
+    .release-name { display: none; }
   }
 </style>

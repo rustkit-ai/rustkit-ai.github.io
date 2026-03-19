@@ -4,6 +4,7 @@ import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import { projects } from '../../data/projects';
 import { marked } from 'marked';
+import { ghFetch } from '../../lib/github';
 
 type Release = {
   tag_name: string;
@@ -15,7 +16,7 @@ type Release = {
 export async function getStaticPaths() {
   async function fetchReleases(slug: string): Promise<Release[]> {
     try {
-      const res = await fetch(`https://api.github.com/repos/rustkit-ai/${slug}/releases`);
+      const res = await ghFetch(`repos/rustkit-ai/${slug}/releases`);
       const data: Release[] = await res.json();
       return data
         .filter((r) => r.published_at)
@@ -27,7 +28,8 @@ export async function getStaticPaths() {
 
   async function fetchReadme(slug: string): Promise<string> {
     try {
-      const res = await fetch(`https://raw.githubusercontent.com/rustkit-ai/${slug}/main/README.md`);
+      const res = await fetch(`https://raw.githubusercontent.com/rustkit-ai/${slug}/main/README.md`,
+        import.meta.env.GITHUB_TOKEN ? { headers: { Authorization: `Bearer ${import.meta.env.GITHUB_TOKEN}` } } : {});
       if (!res.ok) return '';
       const md = await res.text();
       return marked(md) as string;

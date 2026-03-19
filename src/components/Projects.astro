@@ -1,12 +1,13 @@
 ---
 import { projects } from '../data/projects';
+import { ghFetch } from '../lib/github';
 
 type Repo = { name: string; stargazers_count: number };
 
 let repoStars: Record<string, number> = {};
 let publicRepoNames: Set<string> = new Set();
 try {
-  const res = await fetch('https://api.github.com/orgs/rustkit-ai/repos?type=public&per_page=100');
+  const res = await ghFetch('orgs/rustkit-ai/repos?type=public&per_page=100');
   const repos: Repo[] = await res.json();
   repos.forEach((r) => {
     repoStars[r.name] = r.stargazers_count;
