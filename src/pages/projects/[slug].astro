@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 import Footer from '../../components/Footer.astro';
 import { projects } from '../../data/projects';
+import { marked } from 'marked';
 
 type Release = {
   tag_name: string;
@@ -12,19 +13,36 @@ type Release = {
 };
 
 export async function getStaticPaths() {
+  async function fetchReleases(slug: string): Promise<Release[]> {
+    try {
+      const res = await fetch(`https://api.github.com/repos/rustkit-ai/${slug}/releases`);
+      const data: Release[] = await res.json();
+      return data
+        .filter((r) => r.published_at)
+        .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime());
+    } catch {
+      return [];
+    }
+  }
+
+  async function fetchReadme(slug: string): Promise<string> {
+    try {
+      const res = await fetch(`https://raw.githubusercontent.com/rustkit-ai/${slug}/main/README.md`);
+      if (!res.ok) return '';
+      const md = await res.text();
+      return marked(md) as string;
+    } catch {
+      return '';
+    }
+  }
+
   const results = await Promise.all(
     projects.map(async (p) => {
-      let releases: Release[] = [];
-      if (p.hasReleases) {
-        try {
-          const res = await fetch(`https://api.github.com/repos/rustkit-ai/${p.slug}/releases`);
-          const data: Release[] = await res.json();
-          releases = data
-            .filter((r) => r.published_at)
-            .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime());
-        } catch {}
-      }
-      return { params: { slug: p.slug }, props: { project: p, releases } };
+      const [releases, readme] = await Promise.all([
+        p.hasReleases ? fetchReleases(p.slug) : Promise.resolve([]),
+        fetchReadme(p.slug),
+      ]);
+      return { params: { slug: p.slug }, props: { project: p, releases, readme } };
     })
   );
   return results;
@@ -32,17 +50,8 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const project = Astro.props.project ?? projects.find((p) => p.slug === slug)!;
-
-let releases: Release[] = Astro.props.releases ?? [];
-if (!Astro.props.releases && project.hasReleases) {
-  try {
-    const res = await fetch(`https://api.github.com/repos/rustkit-ai/${project.slug}/releases`);
-    const data: Release[] = await res.json();
-    releases = data
-      .filter((r) => r.published_at)
-      .sort((a, b) => new Date(b.published_at!).getTime() - new Date(a.published_at!).getTime());
-  } catch {}
-}
+const releases: Release[] = Astro.props.releases ?? [];
+const readme: string = Astro.props.readme ?? '';
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -107,14 +116,17 @@ function formatDate(iso: string) {
         </div>
       </div>
 
-      <!-- Description -->
+      <!-- README / Description -->
       <div class="section">
-        <div class="section-label">About</div>
-        <div class="long-desc">
-          {project.longDescription.split('\n\n').map((para) => (
-            <p>{para}</p>
-          ))}
-        </div>
+        {readme ? (
+          <div class="readme-content" set:html={readme} />
+        ) : (
+          <div class="long-desc">
+            {project.longDescription.split('\n\n').map((para) => (
+              <p>{para}</p>
+            ))}
+          </div>
+        )}
       </div>
 
       <!-- Releases -->
@@ -356,6 +368,122 @@ function formatDate(iso: string) {
   }
 
   .release-item:hover .release-arrow { transform: translateX(3px); color: var(--rust); }
+
+  /* README rendered markdown */
+  .readme-content :global(h1) { display: none; }
+
+  .readme-content :global(h2) {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin: 2.5rem 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .readme-content :global(h3) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    margin: 1.75rem 0 0.75rem;
+  }
+
+  .readme-content :global(p) {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+  }
+
+  .readme-content :global(p:has(img)) { display: none; }
+
+  .readme-content :global(a) {
+    color: var(--rust);
+    text-decoration: none;
+  }
+
+  .readme-content :global(a:hover) { text-decoration: underline; }
+
+  .readme-content :global(code) {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.1em 0.4em;
+    color: var(--text);
+  }
+
+  .readme-content :global(pre) {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    overflow-x: auto;
+    margin: 1.25rem 0;
+  }
+
+  .readme-content :global(pre code) {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .readme-content :global(ul),
+  .readme-content :global(ol) {
+    padding-left: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .readme-content :global(li) {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 0.25rem;
+  }
+
+  .readme-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    margin: 1.25rem 0;
+  }
+
+  .readme-content :global(th) {
+    text-align: left;
+    color: var(--text-dim);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+  }
+
+  .readme-content :global(td) {
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+  }
+
+  .readme-content :global(blockquote) {
+    border-left: 3px solid var(--rust-dim);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--text-dim);
+    font-size: 0.9rem;
+  }
+
+  .readme-content :global(hr) {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
 
   @media (max-width: 640px) {
     .project-page { padding: 6rem 1.25rem 3rem; }
