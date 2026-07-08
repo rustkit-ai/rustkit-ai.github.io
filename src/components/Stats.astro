@@ -1,33 +1,61 @@
 ---
+import {
+  totalDownloads,
+  totalStars,
+  totalReleases,
+  totalCrates,
+  formatDownloads,
+  generatedAt,
+} from '../lib/stats';
+
+const live = (value: number, label: string, desc: string) =>
+  value > 0 ? [{ value: value === totalDownloads ? formatDownloads(value) : `${value}`, label, desc }] : [];
+
 const facts = [
+  ...live(
+    totalDownloads,
+    'crate downloads',
+    'Total downloads across all our crates on crates.io, updated automatically every day.'
+  ),
+  ...live(
+    totalCrates,
+    'crates published',
+    'tersify, aimemo, semstore, trimcp and the semtree workspace. All MIT licensed, all on crates.io.'
+  ),
+  ...live(
+    totalReleases,
+    'releases shipped',
+    'Tagged releases published across our repositories since day one. Real, versioned progress.'
+  ),
+  ...live(
+    totalStars,
+    'GitHub stars',
+    'Stars across the rustkit-ai organisation. Small, growing, and entirely community-driven.'
+  ),
   {
     value: '90%',
     label: 'fewer tokens',
-    desc: 'trimcp compresses MCP tool outputs by 60–90% before they reach your LLM — tersify cuts another 50% on top.',
+    desc: 'trimcp compresses MCP tool outputs by 60-90% before they reach your LLM, and tersify cuts another 50% on top.',
   },
   {
     value: '5',
     label: 'languages',
     desc: 'semtree parses and indexes Rust, Python, JavaScript, TypeScript, and Go with tree-sitter.',
   },
-  {
-    value: '4',
-    label: 'AI editors',
-    desc: 'aimemo works with Claude Code, Cursor, Windsurf, and GitHub Copilot — out of the box, zero configuration.',
-  },
-  {
-    value: '5',
-    label: 'open source tools',
-    desc: 'tersify, aimemo, semtree, semstore, and trimcp — all MIT licensed, all on crates.io.',
-  },
 ];
+
+const updated = new Date(generatedAt).toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
 ---
 
 <section class="stats">
   <div class="section-inner">
     <div class="section-label reveal">By the numbers</div>
     <h2 class="reveal">Built to perform</h2>
-    <p class="section-sub reveal">No benchmarks against imaginary competitors — just what our tools actually do.</p>
+    <p class="section-sub reveal">No benchmarks against imaginary competitors, just what our tools actually do.</p>
 
     <div class="facts-grid">
       {facts.map((f) => (
@@ -38,6 +66,11 @@ const facts = [
         </div>
       ))}
     </div>
+
+    <p class="stats-updated reveal">
+      <span class="dot"></span>
+      Live figures, updated {updated}
+    </p>
   </div>
 </section>
 
@@ -90,5 +123,24 @@ const facts = [
     font-size: 0.83rem;
     color: var(--text-muted);
     line-height: 1.65;
+  }
+
+  .stats-updated {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .stats-updated .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--green) 15%, transparent);
   }
 </style>

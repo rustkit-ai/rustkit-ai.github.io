@@ -1,4 +1,11 @@
 ---
+import { totalDownloads, totalStars, totalCrates, formatDownloads } from '../lib/stats';
+
+const proof = [
+  { value: `${formatDownloads(totalDownloads)}+`, label: 'downloads' },
+  { value: `${totalCrates}`, label: 'crates' },
+  { value: `${totalStars}`, label: 'stars' },
+];
 ---
 
 <section class="hero">
@@ -11,7 +18,7 @@
       <span class="dim">smarter<span class="accent">.</span> cheaper<span class="accent">.</span></span>
     </h1>
     <p class="hero-sub">
-      Semantic code search, persistent memory, and token-cost reduction —
+      Semantic code search, persistent memory, and token-cost reduction.
       Rust tools built for the reality of AI-assisted development.
     </p>
 
@@ -46,6 +53,16 @@
         </svg>
         github.com/rustkit-ai
       </a>
+    </div>
+
+    <div class="hero-proof">
+      {proof.map((s) => (
+        <div class="proof-item">
+          <span class="proof-value">{s.value}</span>
+          <span class="proof-label">{s.label}</span>
+        </div>
+      ))}
+      <span class="proof-note">on crates.io &amp; GitHub</span>
     </div>
   </div>
 </section>
@@ -255,9 +272,54 @@
 
   .btn-ghost:hover { color: var(--text); border-color: var(--text-dim); }
 
+  /* Social proof */
+  .hero-proof {
+    display: flex;
+    align-items: baseline;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards 0.7s;
+  }
+
+  .proof-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.45rem;
+  }
+
+  .proof-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.03em;
+  }
+
+  .proof-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .proof-note {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-left: auto;
+    align-self: center;
+  }
+
   @media (max-width: 640px) {
     .hero { padding: 6rem 1.25rem 3rem; }
     .install-block { width: 100%; }
+    .hero-proof { gap: 1.25rem; }
+    .proof-note { display: none; }
   }
 </style>
 

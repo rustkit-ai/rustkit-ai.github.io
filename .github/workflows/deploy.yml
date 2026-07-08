@@ -3,6 +3,9 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # Rebuild daily so download counts and stars stay fresh between pushes.
+  schedule:
+    - cron: '17 6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -24,6 +27,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # Refresh downloads (crates.io) and stars (GitHub) into src/data/stats.json.
+      # Failures here are non-fatal: the script keeps the committed values, so a
+      # transient API outage never zeroes the numbers on the site.
+      - name: Refresh stats
+        run: node scripts/refresh-stats.mjs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
       - run: npm run build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

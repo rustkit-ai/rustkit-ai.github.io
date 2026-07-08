@@ -5,6 +5,7 @@ import Footer from '../../components/Footer.astro';
 import { projects } from '../../data/projects';
 import { marked } from 'marked';
 import { ghFetch } from '../../lib/github';
+import { projectDownloads, crateBreakdown, type CrateDownloads } from '../../lib/stats';
 
 type Release = {
   tag_name: string;
@@ -44,7 +45,8 @@ export async function getStaticPaths() {
         p.hasReleases ? fetchReleases(p.slug) : Promise.resolve([]),
         fetchReadme(p.slug),
       ]);
-      return { params: { slug: p.slug }, props: { project: p, releases, readme } };
+      const downloads = projectDownloads(p.crateIds);
+      return { params: { slug: p.slug }, props: { project: p, releases, readme, downloads } };
     })
   );
   return results;
@@ -54,6 +56,8 @@ const { slug } = Astro.params;
 const project = Astro.props.project ?? projects.find((p) => p.slug === slug)!;
 const releases: Release[] = Astro.props.releases ?? [];
 const readme: string = Astro.props.readme ?? '';
+const downloads: CrateDownloads = Astro.props.downloads ?? { downloads: 0, recent: 0 };
+const breakdown = crateBreakdown(project.crateIds);
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -65,7 +69,7 @@ function formatDate(iso: string) {
 ---
 
 <Layout
-  title={`${project.name} — rustkit-ai`}
+  title={`${project.name} · rustkit-ai`}
   description={project.description}
 >
   <Nav />
@@ -86,6 +90,21 @@ function formatDate(iso: string) {
         </div>
         <h1>{project.name}</h1>
         <p class="page-sub">{project.description}</p>
+        {downloads.downloads > 0 && (
+          <div class="header-stats">
+            <a href={project.crates ?? undefined} target="_blank" rel="noopener" class="stat">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span class="stat-value">{downloads.downloads.toLocaleString('en-US')}</span>
+              <span class="stat-label">downloads</span>
+            </a>
+            {downloads.recent > 0 && (
+              <span class="stat">
+                <span class="stat-value">{downloads.recent.toLocaleString('en-US')}</span>
+                <span class="stat-label">last 90 days</span>
+              </span>
+            )}
+          </div>
+        )}
         <div class="header-actions">
           {project.install && (
             <div class="install-block">
@@ -130,6 +149,27 @@ function formatDate(iso: string) {
           </div>
         )}
       </div>
+
+      <!-- Per-crate downloads (workspaces publish several crates) -->
+      {breakdown.length > 1 && (
+        <div class="section">
+          <div class="section-label">Crates</div>
+          <div class="crates-list">
+            {breakdown.map((c) => (
+              <a
+                href={`https://crates.io/crates/${c.id}`}
+                target="_blank"
+                rel="noopener"
+                class="crate-row"
+              >
+                <span class="crate-name">{c.id}</span>
+                <span class="crate-bar" style={`--w:${Math.round((c.downloads / breakdown[0].downloads) * 100)}%`}></span>
+                <span class="crate-dl">{c.downloads.toLocaleString('en-US')}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
 
       <!-- Releases -->
       {releases.length > 0 && (
@@ -195,7 +235,7 @@ function formatDate(iso: string) {
     letter-spacing: 0.04em;
   }
 
-  .badge-rust { background: #e8591a18; color: #e87a4a; border: 1px solid #e8591a30; }
+  .badge-rust { background: var(--rust-glow); color: var(--rust); border: 1px solid var(--rust-dim); }
 
   h1 {
     font-family: 'Space Mono', monospace;
@@ -211,6 +251,42 @@ function formatDate(iso: string) {
     line-height: 1.7;
     max-width: 560px;
     margin-bottom: 2rem;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 1.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+
+  .stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+    color: var(--text-dim);
+  }
+
+  a.stat:hover { color: var(--green); }
+  a.stat:hover .stat-value { color: var(--green); }
+
+  .stat svg { color: var(--green); }
+
+  .stat-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   .header-actions {
@@ -298,6 +374,58 @@ function formatDate(iso: string) {
     color: var(--text-muted);
     line-height: 1.8;
   }
+
+  /* Per-crate breakdown */
+  .crates-list {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .crate-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 180px) 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1.25rem;
+    text-decoration: none;
+    color: inherit;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2);
+    transition: background 0.2s;
+  }
+
+  .crate-row:last-child { border-bottom: none; }
+  .crate-row:hover { background: var(--bg-3); }
+
+  .crate-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .crate-bar {
+    height: 5px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--green), color-mix(in srgb, var(--green) 40%, transparent));
+    width: var(--w);
+    min-width: 4px;
+  }
+
+  .crate-dl {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .crate-row:hover .crate-dl { color: var(--green); }
 
   /* Releases */
   .releases-list {

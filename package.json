@@ -9,7 +9,8 @@
     "dev": "astro dev",
     "build": "astro build && npx pagefind --site dist",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "refresh-stats": "node scripts/refresh-stats.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.1",
