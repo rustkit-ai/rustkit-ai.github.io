@@ -1,32 +1,32 @@
 {
-  "generatedAt": "2026-07-08T13:20:21.556Z",
+  "generatedAt": "2026-07-09T14:41:08.245Z",
   "crates": {
     "tersify": {
-      "downloads": 133,
-      "recent": 27
+      "downloads": 141,
+      "recent": 35
     },
     "aimemo": {
-      "downloads": 100,
-      "recent": 47
+      "downloads": 102,
+      "recent": 48
     },
     "semtree-core": {
-      "downloads": 312,
+      "downloads": 318,
       "recent": 271
     },
     "semtree-parse": {
-      "downloads": 174,
+      "downloads": 177,
       "recent": 147
     },
     "semtree-embed": {
-      "downloads": 226,
+      "downloads": 230,
       "recent": 194
     },
     "semtree-store": {
-      "downloads": 173,
+      "downloads": 176,
       "recent": 152
     },
     "semtree-rag": {
-      "downloads": 121,
+      "downloads": 123,
       "recent": 105
     },
     "semtree-cli": {
@@ -34,12 +34,20 @@
       "recent": 8
     },
     "semstore": {
-      "downloads": 80,
+      "downloads": 81,
       "recent": 51
     },
     "trimcp": {
       "downloads": 30,
       "recent": 13
+    },
+    "noxa": {
+      "downloads": 12,
+      "recent": 12
+    },
+    "semtree-analyze": {
+      "downloads": 0,
+      "recent": 0
     }
   },
   "repos": {
@@ -53,7 +61,7 @@
     },
     "aimemo": {
       "stars": 4,
-      "releases": 14
+      "releases": 11
     },
     "rustkit-ai.github.io": {
       "stars": 0,
@@ -65,7 +73,7 @@
     },
     "semtree": {
       "stars": 2,
-      "releases": 2
+      "releases": 3
     },
     "homebrew-tap": {
       "stars": 0,
@@ -78,6 +86,10 @@
     "semstore": {
       "stars": 1,
       "releases": 1
+    },
+    "noxa": {
+      "stars": 0,
+      "releases": 0
     }
   }
 }

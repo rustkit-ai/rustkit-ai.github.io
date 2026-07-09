@@ -5,6 +5,7 @@ import { stars, repoNames, projectDownloads, formatDownloads } from '../lib/stat
 const visibleProjects = projects.filter((p) => repoNames.size === 0 || repoNames.has(p.slug));
 
 const icons: Record<string, string> = {
+  'noxa': 'shield',
   'tersify': 'zap',
   'aimemo': 'brain',
   'semtree': 'tree',
@@ -28,6 +29,11 @@ const icons: Record<string, string> = {
           <a href={`/projects/${p.slug}`} class="project-card reveal">
             <div class="card-header">
               <div class="card-icon">
+                {icon === 'shield' && (
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/>
+                  </svg>
+                )}
                 {icon === 'zap' && (
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>

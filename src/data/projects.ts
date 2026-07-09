@@ -14,6 +14,22 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    slug: 'noxa',
+    name: 'noxa',
+    description: 'Passively captures business rules from your Claude Code conversations and turns them into typed validation code.',
+    longDescription: `noxa hooks into Claude Code and automatically captures the business rules, constraints, and invariants you mention in conversation — then makes them permanent. No more re-teaching your AI the same rules every session.
+
+A passive notification hook extracts entities and constraints (21 patterns, English and French), scores them by confidence, and writes them to a git-versioned \`.noxa/rules.toml\`. From there noxa injects them into \`CLAUDE.md\` so the next session starts informed, generates typed validation functions in Rust, TypeScript, or Python, and exposes the rules over an MCP server so Claude can query them in real time.
+
+Ambiguous phrasing? \`noxa enrich\` uses Claude Haiku to sharpen the extraction.`,
+    github: 'https://github.com/rustkit-ai/noxa',
+    crates: 'https://crates.io/crates/noxa',
+    crateIds: ['noxa'],
+    install: 'cargo install noxa',
+    language: 'Rust',
+    hasReleases: false,
+  },
+  {
     slug: 'tersify',
     name: 'tersify',
     description: 'Compress code and text for LLMs by stripping noise. Reduce tokens by up to 50% and cut API costs without losing meaning.',
@@ -45,15 +61,15 @@ Works out of the box with Claude Code, Cursor, Windsurf, and GitHub Copilot. One
   {
     slug: 'semtree',
     name: 'semtree',
-    description: 'Semantic code intelligence for Rust: tree-sitter parsing, embeddings, and RAG for multi-language codebases.',
-    longDescription: `semtree turns your codebase into a searchable semantic index. It parses source files with tree-sitter, extracts meaningful chunks (functions, structs, modules), embeds them locally with fastembed, and stores them in a vector index powered by usearch.
+    description: 'Semantic code intelligence for any codebase: tree-sitter parsing, embeddings, and RAG — multi-language, multi-backend.',
+    longDescription: `semtree turns your codebase into a searchable semantic index. It parses source files with tree-sitter, extracts meaningful chunks (functions, structs, methods), embeds them locally with fastembed, and stores them in an HNSW vector index — all on-device, no daemon, no API key required.
 
-The result: lightning-fast semantic search over your code, no cloud required. Use it as a CLI to index and query any codebase, or as a library to build RAG pipelines that inject relevant context into LLM prompts.
+The result: lightning-fast semantic search over your code. Use it as a CLI to index, search, and pull RAG context blocks for LLMs, or as a library to build your own pipelines. \`semtree analyze\` surfaces complexity metrics and your largest functions.
 
-Supports Rust, Python, JavaScript, TypeScript, and Go out of the box.`,
+Multi-language (Rust, Python, JavaScript, TypeScript, Go) and multi-backend: run embeddings locally, or plug in OpenAI or Ollama as drop-in backends when you need higher quality.`,
     github: 'https://github.com/rustkit-ai/semtree',
-    crates: 'https://crates.io/crates/semtree-core',
-    crateIds: ['semtree-core', 'semtree-parse', 'semtree-embed', 'semtree-store', 'semtree-rag', 'semtree-cli'],
+    crates: 'https://crates.io/crates/semtree-rag',
+    crateIds: ['semtree-core', 'semtree-parse', 'semtree-embed', 'semtree-store', 'semtree-rag', 'semtree-analyze', 'semtree-cli'],
     install: 'cargo install semtree-cli',
     language: 'Rust',
     hasReleases: true,
